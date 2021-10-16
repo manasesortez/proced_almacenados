@@ -38,6 +38,10 @@ CONSTRAINT fk_repuestos FOREIGN KEY(id_modelos)
 REFERENCES modelos(id_modelos)
 )
 
+SELECT * FROM marca;
+SELECT * FROM modelos;
+SELECT * FROM repuestos;
+
 INSERT INTO marca VALUES ('Toyota','Japon')
 INSERT INTO marca VALUES ('Kia','Corea')
 INSERT INTO marca VALUES ('Fiat','Italia')
@@ -97,3 +101,57 @@ INSERT INTO repuestos VALUES ('Platinos',17.3,30,2)
 INSERT INTO repuestos VALUES ('Condensador',45,30,4)
 INSERT INTO repuestos VALUES ('Condensador',2.3,30,3)
 INSERT INTO repuestos VALUES ('Alternadores',34.23,30,5)
+
+/**Exsercise Storage Procedure**/
+CREATE PROCEDURE ModeloxMarca
+    @busca varchar(15)
+AS
+BEGIN
+    SELECT marca.marca, modelos.modelo, modelos.precio
+    FROM marca INNER JOIN modelos ON marca.id_marca = modelos.id_marca
+    WHERE marca.marca LIKE @busca
+END
+
+/**Diseñar el procedimiento almacenado de tal forma que no requiera parametros
+  de entrada.**/
+CREATE PROCEDURE ModeloxMarcaInsertDefault
+    (@busca varchar(15) = 'Honda')
+AS
+BEGIN
+    SELECT marca.marca, modelos.modelo, modelos.precio
+    FROM marca INNER JOIN modelos ON marca.id_marca = modelos.id_marca
+    WHERE marca.marca LIKE @busca
+END
+
+/**Ejecutar el procedimiento almacenados anteriores**/
+EXEC ModeloxMarcaInsertDefault
+EXEC ModeloxMarca @busca = 'Honda'
+
+/**Desarrollar los siguientes ejercicios en equipos de trabajo:**/
+
+/**
+  1. Cree un procedimiento almacenado para mostrarme una lista de repuestos con
+  su nombre, precio, porcentaje de descuento y el valor que tuviera si se aplica
+  dicho descuento.
+**/
+
+/**
+2. Elabore otro que tenga un parametro que me pida el modelo del auto, y que
+  me muestre todos los repuestos que pertenecen a ese modelo de auto.
+**/
+
+/**
+3. Ahora elabore uno que muestre la marca, el paıs, el nombre del modelo y
+  el precio, pero que me pida dos par´ametros, pa´ıs y precio, para usarlo
+  en la busqueda
+**/
+
+/**
+4. Tambien elabore uno que me muestre los datos del repuesto, modelo y marca,
+  a partir de que el precio de los repuestos, este entre dos valores.
+ **/
+
+/**
+  5. Cree una lista de modelos y que muestre la cantidad de repuestos
+  que hay por cada modelo.
+ */
