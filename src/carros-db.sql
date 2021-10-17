@@ -219,14 +219,19 @@ EXEC RepuestoxModeloxMarca '25.7','12.3'
   que hay por cada modelo.
  */
 
-CREATE PROCEDURE Get_RespuestosCantidadxModelos
+CREATE PROCEDURE GetRespuestosCantidadxModelos
 AS
 BEGIN
-    SELECT marca.marca AS MARCA,
+    SELECT
+           marca.marca AS MARCA,
            modelos.modelo AS MODELO,
            marca.pais AS PAIS,
-           modelos.precio AS PRECIO
-    FROM repuestos
-        INNER JOIN modelos ON repuestos.id_modelos = modelos.id_modelos
+           modelos.precio AS PRECIO,
+           COUNT(*) AS [NO. REPUESTOS]
+    FROM modelos
+        INNER JOIN repuestos ON modelos.id_modelos = repuestos.id_modelos
         INNER JOIN marca ON modelos.id_marca = marca.id_marca
+    GROUP BY marca.marca, modelos.modelo, marca.pais, modelos.precio;
 END
+
+EXEC GetRespuestosCantidadxModelos;
