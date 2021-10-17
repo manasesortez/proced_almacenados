@@ -134,24 +134,99 @@ EXEC ModeloxMarca @busca = 'Honda'
   su nombre, precio, porcentaje de descuento y el valor que tuviera si se aplica
   dicho descuento.
 **/
+CREATE PROCEDURE ViewRepuestos
+AS
+BEGIN
+    SELECT repuestos.nombre AS NOMBRE,
+           repuestos.precio AS PRECIO,
+           CONCAT(repuestos.descuento, '%') AS [DESCUENTO],
+           repuestos.precio - (repuestos.precio * repuestos.descuento / 100) AS [PRECIO FINAL]
+    FROM repuestos INNER JOIN modelos ON repuestos.id_modelos = modelos.id_modelos
+END
+
+EXEC ViewRepuestos
 
 /**
 2. Elabore otro que tenga un parametro que me pida el modelo del auto, y que
   me muestre todos los repuestos que pertenecen a ese modelo de auto.
 **/
 
+CREATE PROCEDURE RepuestoxModelo
+     @busca varchar(15)
+AS
+BEGIN
+    SELECT modelos.modelo AS MODELO,
+           repuestos.nombre AS [NOMBRE REPUESTO],
+           repuestos.precio AS PRECIO,
+           CONCAT(repuestos.descuento, '%') AS [DESCUENTO],
+           repuestos.precio - (repuestos.precio * repuestos.descuento / 100) AS [PRECIO FINAL]
+    FROM repuestos INNER JOIN modelos ON repuestos.id_modelos = modelos.id_modelos
+    WHERE modelos.modelo LIKE @busca
+END
+
+EXEC RepuestoxModelo 'Civic'
+
 /**
 3. Ahora elabore uno que muestre la marca, el paıs, el nombre del modelo y
-  el precio, pero que me pida dos par´ametros, pa´ıs y precio, para usarlo
+  el precio, pero que me pida dos parametros, paıs y precio, para usarlo
   en la busqueda
 **/
+
+CREATE PROCEDURE MarcaxPrice
+     (@Pais varchar(15), @Precio smallmoney)
+AS
+BEGIN
+    SELECT marca.marca AS MARCA,
+           modelos.modelo AS MODELO,
+           marca.pais AS PAIS,
+           modelos.precio AS PRECIO
+    FROM marca INNER JOIN modelos ON marca.id_marca = modelos.id_marca
+    WHERE marca.pais LIKE @Pais AND modelos.precio LIKE @Precio
+END
+
+EXEC MarcaxPrice 'Japon','10000'
 
 /**
 4. Tambien elabore uno que me muestre los datos del repuesto, modelo y marca,
   a partir de que el precio de los repuestos, este entre dos valores.
  **/
 
+CREATE PROCEDURE RepuestoxModeloxMarca
+     (@PrecioMax smallmoney, @PrecioMin smallmoney)
+AS
+BEGIN
+    SELECT marca.marca AS MARCA,
+           modelos.modelo AS MODELO,
+           marca.pais AS PAIS,
+           modelos.precio AS PRECIO,
+           modelos.asientos AS ASIENTOS,
+           modelos.combustible AS [MAX COMBUSTIBLE],
+           modelos.year_modelo AS [AÑO FABRICACION],
+           repuestos.nombre AS [REPUESTO NOMBRE],
+           repuestos.precio AS [REPUESTO PRECIO]
+    FROM repuestos
+        INNER JOIN modelos ON repuestos.id_modelos = modelos.id_modelos
+        INNER JOIN marca ON modelos.id_marca = marca.id_marca
+    WHERE repuestos.precio BETWEEN @PrecioMin AND @PrecioMax
+END
+
+DROP PROCEDURE RepuestoxModeloxMarca;
+
+EXEC RepuestoxModeloxMarca '25.7','12.3'
+
 /**
   5. Cree una lista de modelos y que muestre la cantidad de repuestos
   que hay por cada modelo.
  */
+
+CREATE PROCEDURE Get_RespuestosCantidadxModelos
+AS
+BEGIN
+    SELECT marca.marca AS MARCA,
+           modelos.modelo AS MODELO,
+           marca.pais AS PAIS,
+           modelos.precio AS PRECIO
+    FROM repuestos
+        INNER JOIN modelos ON repuestos.id_modelos = modelos.id_modelos
+        INNER JOIN marca ON modelos.id_marca = marca.id_marca
+END
